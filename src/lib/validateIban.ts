@@ -1,6 +1,3 @@
-const IBAN_VALIDATION_ENDPOINT =
-  process.env.NEXT_PUBLIC_IBAN_VALIDATION_ENDPOINT;
-
 type IbanValidationResponse = {
   iban: string;
   valid: boolean;
@@ -16,7 +13,7 @@ export async function validateIban(
 
   try {
     response = await fetch(
-      `${IBAN_VALIDATION_ENDPOINT}?iban=${encodeURIComponent(iban)}`,
+      `/api/validate-iban?iban=${encodeURIComponent(iban)}`,
       { signal },
     );
   } catch (error) {
