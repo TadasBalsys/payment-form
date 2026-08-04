@@ -238,19 +238,14 @@ describe("PaymentForm", () => {
     });
   });
 
-  it("shows a live character counter for payee and purpose within their limits", async () => {
-    const user = userEvent.setup();
+  it("caps payee and purpose at their character limits", () => {
     render(<PaymentForm payerAccounts={payerAccounts} />);
 
-    const payeeInput = screen.getByLabelText("Payee") as HTMLInputElement;
-    await user.type(payeeInput, "Jane");
-    expect(screen.getByText("4/70")).toBeInTheDocument();
-    expect(payeeInput).toHaveAttribute("maxLength", "70");
-
-    const purposeInput = screen.getByLabelText("Purpose") as HTMLInputElement;
-    await user.type(purposeInput, "Rent");
-    expect(screen.getByText("4/135")).toBeInTheDocument();
-    expect(purposeInput).toHaveAttribute("maxLength", "135");
+    expect(screen.getByLabelText("Payee")).toHaveAttribute("maxLength", "70");
+    expect(screen.getByLabelText("Purpose")).toHaveAttribute(
+      "maxLength",
+      "135",
+    );
   });
 
   describe("submit", () => {

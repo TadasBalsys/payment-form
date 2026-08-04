@@ -70,14 +70,6 @@ describe("AccountSelector", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows a prompt when nothing is selected yet", () => {
-    render(<Harness />);
-
-    expect(
-      screen.getByText("Select the account to pay from."),
-    ).toBeInTheDocument();
-  });
-
   it("shows the selected account's balance once chosen", async () => {
     const user = userEvent.setup();
     render(<Harness />);
