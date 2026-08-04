@@ -77,7 +77,7 @@ const AccountSelector = ({
               Balance: {formatAmount(selectedAccount.balance, locale)} EUR
             </Typography>
           ) : (
-            "Select the account to pay from."
+            " "
           ))}
       </FormHelperText>
     </>

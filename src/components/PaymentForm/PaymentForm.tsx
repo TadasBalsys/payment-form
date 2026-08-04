@@ -50,6 +50,7 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
   const [submittedData, setSubmittedData] = useState<PaymentFormValues | null>(
     null,
   );
+  const [showValidationError, setShowValidationError] = useState(false);
 
   const ibanCheckId = useRef(0);
   const paymentSchema = useMemo(
@@ -141,6 +142,10 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
     setIbanStatus("idle");
   };
 
+  const onInvalid = () => {
+    setShowValidationError(true);
+  };
+
   return (
     <Paper elevation={2} sx={{ maxWidth: 560, width: "100%", p: 4 }}>
       <Stack
@@ -156,7 +161,7 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
       <Box
         component="form"
         noValidate
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit, onInvalid)}
         sx={{ display: "flex", flexDirection: "column", gap: 3 }}
       >
         <Controller
@@ -185,6 +190,10 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
               {...field}
               label="Amount"
               type="number"
+              onChange={(e) => {
+                field.onChange(e);
+                void trigger("amount");
+              }}
               slotProps={{
                 htmlInput: { step: "0.01", min: "0" },
                 input: {
@@ -229,9 +238,7 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
               value={field.value ?? ""}
               label="Payee"
               error={!!errors.payee}
-              helperText={
-                errors.payee?.message ?? `${field.value?.length ?? 0}/70`
-              }
+              helperText={errors.payee?.message ?? " "}
               slotProps={{ htmlInput: { maxLength: 70 } }}
               fullWidth
             />
@@ -250,7 +257,7 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
               minRows={2}
               error={!!errors.purpose}
               helperText={
-                errors.purpose?.message ?? `${field.value?.length ?? 0}/135`
+                errors.purpose?.message ?? " "
               }
               slotProps={{ htmlInput: { maxLength: 135 } }}
               fullWidth
@@ -272,7 +279,7 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
         open={!!submittedData}
         autoHideDuration={5000}
         onClose={() => setSubmittedData(null)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert
           severity="success"
@@ -282,6 +289,21 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
           Payment of{" "}
           {submittedData ? formatAmount(submittedData.amount, locale) : ""} EUR
           to {submittedData?.payee} submitted.
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={showValidationError}
+        autoHideDuration={5000}
+        onClose={() => setShowValidationError(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          onClose={() => setShowValidationError(false)}
+        >
+          Please fix the highlighted fields before submitting.
         </Alert>
       </Snackbar>
     </Paper>
