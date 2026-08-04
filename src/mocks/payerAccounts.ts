@@ -21,3 +21,11 @@ export const payerAccounts: PayerAccount[] = [
     balance: -5.87,
   },
 ];
+
+const MOCK_NETWORK_DELAY_MS = 300;
+
+// mocking a network delay to simulate a real data source
+export async function getPayerAccounts(): Promise<PayerAccount[]> {
+  await new Promise((resolve) => setTimeout(resolve, MOCK_NETWORK_DELAY_MS));
+  return payerAccounts;
+}
