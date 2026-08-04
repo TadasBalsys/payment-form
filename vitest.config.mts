@@ -13,6 +13,12 @@ export default defineConfig({
     env: {
       NEXT_PUBLIC_IBAN_VALIDATION_ENDPOINT: "https://iban-validate.test/api",
     },
-    exclude: [...configDefaults.exclude, ".next/**", "e2e/**", "playwright/**"],
+    exclude: [
+      ...configDefaults.exclude,
+      ".next/**",
+      ".claude/**",
+      "e2e/**",
+      "playwright/**",
+    ],
   },
 });

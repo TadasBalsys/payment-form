@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import PaymentForm from "@/components/PaymentForm";
-import { getPayerAccounts } from "@/mocks/payerAccounts";
 import type { PayerAccount } from "@/mocks/payerAccounts";
 
 export default function Home() {
@@ -11,15 +10,16 @@ export default function Home() {
     null,
   );
 
-  // mock fetching payer accounts from an API
   useEffect(() => {
     let active = true;
 
-    getPayerAccounts().then((accounts) => {
-      if (active) {
-        setPayerAccounts(accounts);
-      }
-    });
+    fetch("/api/payer-accounts")
+      .then((res) => res.json())
+      .then((accounts: PayerAccount[]) => {
+        if (active) {
+          setPayerAccounts(accounts);
+        }
+      });
 
     return () => {
       active = false;

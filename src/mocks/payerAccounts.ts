@@ -4,7 +4,7 @@ export type PayerAccount = {
   balance: number;
 };
 
-const payerAccounts: PayerAccount[] = [
+export const payerAccounts: PayerAccount[] = [
   {
     iban: "LT307300010172619160",
     id: "1",
@@ -21,10 +21,3 @@ const payerAccounts: PayerAccount[] = [
     balance: -5.87,
   },
 ];
-
-const MOCK_NETWORK_DELAY_MS = 300;
-
-export async function getPayerAccounts(): Promise<PayerAccount[]> {
-  await new Promise((resolve) => setTimeout(resolve, MOCK_NETWORK_DELAY_MS));
-  return payerAccounts;
-}
