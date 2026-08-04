@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
-import PaymentForm from "@/components/PaymentForm";
+import PaymentForm from "@/components/PaymentForm/PaymentForm";
 import type { PayerAccount } from "@/mocks/payerAccounts";
 
 export default function Home() {

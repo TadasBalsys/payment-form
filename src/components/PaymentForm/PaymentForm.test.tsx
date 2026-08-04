@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import PaymentForm from "./PaymentForm";
+import PaymentForm from "@/components/PaymentForm/PaymentForm";
 import type { PayerAccount } from "@/mocks/payerAccounts";
 import { IbanValidationError, validateIban } from "@/lib/validateIban";
 

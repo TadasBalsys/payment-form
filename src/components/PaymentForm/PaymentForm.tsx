@@ -9,12 +9,8 @@ import {
   Button,
   CircularProgress,
   FormControl,
-  FormHelperText,
   InputAdornment,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Snackbar,
   Stack,
   TextField,
@@ -22,6 +18,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
+import AccountSelector from "@/components/AccountSelector/AccountSelector";
 import type { PayerAccount } from "@/mocks/payerAccounts";
 import {
   IBAN_FORMAT,
@@ -31,6 +28,7 @@ import {
 } from "@/lib/paymentSchema";
 import { formatAmount, type AmountLocale } from "@/lib/formatAmount";
 import { IbanValidationError, validateIban } from "@/lib/validateIban";
+import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
 
 type IbanStatus = "idle" | "checking" | "valid" | "invalid" | "error";
 
@@ -152,16 +150,7 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
         <Typography variant="h5" component="h1" sx={{ fontWeight: 600 }}>
           New Payment
         </Typography>
-        <ToggleButtonGroup
-          value={locale}
-          exclusive
-          size="small"
-          onChange={(_, value) => value && setLocale(value)}
-          aria-label="Amount format locale"
-        >
-          <ToggleButton value="en">EN</ToggleButton>
-          <ToggleButton value="lt">LT</ToggleButton>
-        </ToggleButtonGroup>
+       <LanguageSwitcher locale={locale} setLocale={setLocale} />
       </Stack>
 
       <Box
@@ -175,57 +164,15 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
           control={control}
           render={({ field }) => (
             <FormControl fullWidth error={!!errors.payerAccountId}>
-              <InputLabel id="payer-account-label">Payer Account</InputLabel>
-              <Select
-                {...field}
-                labelId="payer-account-label"
-                label="Payer Account"
-                onChange={(e) => {
-                  field.onChange(e);
-                  if (amountValue) {
-                    void trigger(["amount", "payerAccountId"]);
-                  }
-                }}
-              >
-                {payerAccounts.map((account) => (
-                  <MenuItem key={account.id} value={account.id}>
-                    <Stack
-                      direction="row"
-                      sx={{
-                        justifyContent: "space-between",
-                        width: "100%",
-                        gap: 2,
-                      }}
-                    >
-                      <span>{account.iban}</span>
-                      <Typography
-                        component="span"
-                        color={account.balance < 0 ? "error" : "text.secondary"}
-                        sx={{ fontWeight: account.balance < 0 ? 600 : 400 }}
-                      >
-                        {formatAmount(account.balance, locale)} EUR
-                      </Typography>
-                    </Stack>
-                  </MenuItem>
-                ))}
-              </Select>
-              <FormHelperText>
-                {errors.payerAccountId?.message ??
-                  (selectedAccount ? (
-                    <Typography
-                      component="span"
-                      variant="caption"
-                      color={
-                        selectedAccount.balance < 0 ? "error" : "text.secondary"
-                      }
-                    >
-                      Balance: {formatAmount(selectedAccount.balance, locale)}{" "}
-                      EUR
-                    </Typography>
-                  ) : (
-                    "Select the account to pay from."
-                  ))}
-              </FormHelperText>
+              <AccountSelector
+                field={field}
+                amountValue={amountValue}
+                trigger={trigger}
+                payerAccounts={payerAccounts}
+                error={errors.payerAccountId}
+                selectedAccount={selectedAccount}
+                locale={locale}
+              />
             </FormControl>
           )}
         />
