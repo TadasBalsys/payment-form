@@ -11,7 +11,7 @@ export default defineConfig({
     globals: false,
     setupFiles: ["./vitest.setup.ts"],
     env: {
-      NEXT_PUBLIC_IBAN_VALIDATION_ENDPOINT: "https://iban-validate.test/api",
+      IBAN_VALIDATION_ENDPOINT: "https://iban-validate.test/api",
     },
     exclude: [
       ...configDefaults.exclude,

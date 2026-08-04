@@ -61,7 +61,7 @@ describe("validateIban", () => {
     await validateIban("LT30 X");
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining(`iban=${encodeURIComponent("LT30 X")}`),
+      `/api/validate-iban?iban=${encodeURIComponent("LT30 X")}`,
       expect.anything(),
     );
   });
