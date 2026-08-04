@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   FormControl,
-  InputAdornment,
   Paper,
   Snackbar,
   Stack,
@@ -16,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import AccountSelector from "@/components/AccountSelector/AccountSelector";
+import AmountField from "@/components/AmountField/AmountField";
 import PayeeAccount from "@/components/PayeeAccount/PayeeAccount";
 import type { PayerAccount } from "@/mocks/payerAccounts";
 import {
@@ -186,31 +186,11 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
           name="amount"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              label="Amount"
-              type="number"
-              onChange={(e) => {
-                field.onChange(e);
-                void trigger("amount");
-              }}
-              slotProps={{
-                htmlInput: { step: "0.01", min: "0" },
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">EUR</InputAdornment>
-                  ),
-                },
-              }}
-              value={field.value ?? ""}
-              error={!!errors.amount}
-              helperText={
-                errors.amount?.message ??
-                (amountValue && !Number.isNaN(Number(amountValue))
-                  ? `= ${formatAmount(Number(amountValue), locale)} EUR`
-                  : "Enter an amount between 0.01 and the account balance.")
-              }
-              fullWidth
+            <AmountField
+              field={field}
+              error={errors.amount}
+              locale={locale}
+              trigger={trigger}
             />
           )}
         />
