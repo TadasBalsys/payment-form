@@ -8,6 +8,8 @@ type IbanValidationResponse = {
 
 export class IbanValidationError extends Error {}
 
+export type IbanStatus = "idle" | "checking" | "valid" | "invalid" | "error";
+
 export async function validateIban(
   iban: string,
   signal?: AbortSignal,

@@ -7,18 +7,16 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress,
   FormControl,
   InputAdornment,
   Paper,
   Snackbar,
   Stack,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import AccountSelector from "@/components/AccountSelector/AccountSelector";
+import PayeeAccount from "@/components/PayeeAccount/PayeeAccount";
 import type { PayerAccount } from "@/mocks/payerAccounts";
 import {
   IBAN_FORMAT,
@@ -27,10 +25,12 @@ import {
   type PaymentFormValues,
 } from "@/lib/paymentSchema";
 import { formatAmount, type AmountLocale } from "@/lib/formatAmount";
-import { IbanValidationError, validateIban } from "@/lib/validateIban";
+import {
+  IbanValidationError,
+  validateIban,
+  type IbanStatus,
+} from "@/lib/validateIban";
 import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
-
-type IbanStatus = "idle" | "checking" | "valid" | "invalid" | "error";
 
 const defaultValues: PaymentFormInput = {
   payerAccountId: "",
@@ -210,37 +210,12 @@ export default function PaymentForm({ payerAccounts }: PaymentFormProps) {
           name="payeeAccount"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              label="Payee Account (IBAN)"
-              value={field.value ?? ""}
-              onChange={(e) => {
-                field.onChange(e);
-                setIbanStatus("idle");
-              }}
-              onBlur={() => {
-                field.onBlur();
-                void checkIban(field.value ?? "");
-              }}
-              error={!!errors.payeeAccount}
-              helperText={
-                errors.payeeAccount?.message ??
-                (ibanStatus === "valid"
-                  ? "IBAN verified."
-                  : "IBAN is checked against the validation service on blur.")
-              }
-              slotProps={{
-                input: {
-                  endAdornment:
-                    ibanStatus === "checking" ? (
-                      <InputAdornment position="end">
-                        <CircularProgress size={18} />
-                      </InputAdornment>
-                    ) : undefined,
-                },
-              }}
-              color={ibanStatus === "valid" ? "success" : undefined}
-              fullWidth
+            <PayeeAccount
+              field={field}
+              error={errors.payeeAccount}
+              ibanStatus={ibanStatus}
+              setIbanStatus={setIbanStatus}
+              checkIban={checkIban}
             />
           )}
         />
