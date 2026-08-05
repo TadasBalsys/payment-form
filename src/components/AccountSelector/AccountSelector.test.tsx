@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AccountSelector from "./AccountSelector";
 import type { PayerAccount } from "@/mocks/payerAccounts";
-import type { PaymentFormInput } from "@/lib/paymentSchema";
+import type { PaymentFormInput } from "@/lib/schema/paymentSchema";
 
 const payerAccounts: PayerAccount[] = [
   { id: "1", iban: "LT307300010172619160", balance: 1000.12 },

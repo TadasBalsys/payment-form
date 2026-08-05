@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import type {
   ControllerRenderProps,
   FieldErrors,
   UseFormTrigger,
 } from "react-hook-form";
 import { InputAdornment, TextField } from "@mui/material";
-import type { PaymentFormInput } from "@/lib/paymentSchema";
+import type { PaymentFormInput } from "@/lib/schema/paymentSchema";
 import {
   formatAmount,
   parseAmount,
   toEditableAmount,
   type AmountLocale,
-} from "@/lib/formatAmount";
+} from "@/lib/utils/formatAmount";
 
 type AmountFieldProps = {
   field: ControllerRenderProps<PaymentFormInput, "amount">;
@@ -22,6 +22,7 @@ type AmountFieldProps = {
 
 const toNumber = (value: unknown): number | null => {
   if (value === "" || value === null || value === undefined) return null;
+
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 };
@@ -35,32 +36,36 @@ const AmountField = ({ field, error, locale, trigger }: AmountFieldProps) => {
   const display =
     draft ?? (value !== null ? formatAmount(value, locale) : fallback);
 
+  const handleFocus = () => {
+    setDraft(value !== null ? toEditableAmount(value, locale) : fallback);
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const next = e.target.value;
+    setDraft(next);
+
+    const parsed = parseAmount(next, locale);
+    // Hand unparseable text straight to the schema so it reports the error,
+    // and an empty string so the "required" rule still fires.
+    field.onChange(parsed ?? (next.trim() === "" ? "" : next));
+    void trigger("amount");
+  };
+
+  const handleBlur = () => {
+    setDraft(null);
+    field.onBlur();
+  };
+
   return (
     <TextField
       {...field}
       label="Amount"
       type="text"
       value={display}
-      onFocus={() => {
-        setDraft(value !== null ? toEditableAmount(value, locale) : fallback);
-      }}
-      onChange={(e) => {
-        const next = e.target.value;
-        setDraft(next);
-
-        const parsed = parseAmount(next, locale);
-        // Hand unparseable text straight to the schema so it reports the error,
-        // and an empty string so the "required" rule still fires.
-        field.onChange(parsed ?? (next.trim() === "" ? "" : next));
-        void trigger("amount");
-      }}
-      onBlur={() => {
-        setDraft(null);
-        field.onBlur();
-      }}
+      onFocus={handleFocus}
+      onChange={handleChange}
+      onBlur={handleBlur}
       slotProps={{
-        // inputMode has to go on the inner <input>; MUI forwards unrecognised
-        // top-level props to the root element instead.
         htmlInput: { inputMode: "decimal" },
         input: {
           endAdornment: <InputAdornment position="end">EUR</InputAdornment>,

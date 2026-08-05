@@ -4,21 +4,22 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Stack,
   Typography,
 } from "@mui/material";
 import type { PayerAccount } from "@/mocks/payerAccounts";
-import type { PaymentFormInput } from "@/lib/paymentSchema";
-import { formatAmount, type AmountLocale } from "@/lib/formatAmount";
+import type { PaymentFormInput } from "@/lib/schema/paymentSchema";
+import { formatAmount, type AmountLocale } from "@/lib/utils/formatAmount";
 
 type AccountSelectorProps = {
   field: ControllerRenderProps<PaymentFormInput, "payerAccountId">;
   amountValue: PaymentFormInput["amount"];
-  trigger: UseFormTrigger<PaymentFormInput>;
   payerAccounts: PayerAccount[];
   error?: FieldError;
   selectedAccount?: PayerAccount;
   locale: AmountLocale;
+  trigger: UseFormTrigger<PaymentFormInput>;
 };
 
 const AccountSelector = ({
@@ -30,6 +31,14 @@ const AccountSelector = ({
   selectedAccount,
   locale,
 }: AccountSelectorProps) => {
+const handleChange = (e: SelectChangeEvent<string>) => {
+  field.onChange(e);
+
+  if (amountValue) {
+    void trigger(["amount", "payerAccountId"]);
+  }
+};
+
   return (
     <>
       <InputLabel id="payer-account-label">Payer Account</InputLabel>
@@ -37,12 +46,7 @@ const AccountSelector = ({
         {...field}
         labelId="payer-account-label"
         label="Payer Account"
-        onChange={(e) => {
-          field.onChange(e);
-          if (amountValue) {
-            void trigger(["amount", "payerAccountId"]);
-          }
-        }}
+        onChange={handleChange}
       >
         {payerAccounts.map((account) => (
           <MenuItem key={account.id} value={account.id}>

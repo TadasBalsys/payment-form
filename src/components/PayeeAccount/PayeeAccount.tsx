@@ -1,8 +1,8 @@
-import type { Dispatch, SetStateAction } from "react";
+import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 import type { ControllerRenderProps, FieldError } from "react-hook-form";
 import { CircularProgress, InputAdornment, TextField } from "@mui/material";
-import type { PaymentFormInput } from "@/lib/paymentSchema";
-import type { IbanStatus } from "@/lib/validateIban";
+import type { PaymentFormInput } from "@/lib/schema/paymentSchema";
+import type { IbanStatus } from "@/lib/utils/validateIban";
 
 type PayeeAccountProps = {
   field: ControllerRenderProps<PaymentFormInput, "payeeAccount">;
@@ -19,19 +19,23 @@ const PayeeAccount = ({
   setIbanStatus,
   checkIban,
 }: PayeeAccountProps) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    field.onChange(e);
+    setIbanStatus("idle");
+  };
+
+  const handleBlur = () => {
+    field.onBlur();
+    void checkIban(field.value ?? "");
+  };
+
   return (
     <TextField
       {...field}
       label="Payee Account (IBAN)"
       value={field.value ?? ""}
-      onChange={(e) => {
-        field.onChange(e);
-        setIbanStatus("idle");
-      }}
-      onBlur={() => {
-        field.onBlur();
-        void checkIban(field.value ?? "");
-      }}
+      onChange={handleChange}
+      onBlur={handleBlur}
       error={!!error}
       helperText={
         error?.message ??

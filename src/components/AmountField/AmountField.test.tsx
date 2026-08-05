@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AmountField from "./AmountField";
-import type { AmountLocale } from "@/lib/formatAmount";
+import type { AmountLocale } from "@/lib/utils/formatAmount";
 
 function Harness({
   locale = "en",

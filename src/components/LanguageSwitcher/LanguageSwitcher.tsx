@@ -1,4 +1,4 @@
-import { AmountLocale } from "@/lib/formatAmount";
+import { AmountLocale } from "@/lib/utils/formatAmount";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 

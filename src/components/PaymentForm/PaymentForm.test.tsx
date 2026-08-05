@@ -3,9 +3,9 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import PaymentForm from "@/components/PaymentForm/PaymentForm";
 import type { PayerAccount } from "@/mocks/payerAccounts";
-import { IbanValidationError, validateIban } from "@/lib/validateIban";
+import { IbanValidationError, validateIban } from "@/lib/utils/validateIban";
 
-vi.mock("@/lib/validateIban", () => ({
+vi.mock("@/lib/utils/validateIban", () => ({
   validateIban: vi.fn(),
   IbanValidationError: class IbanValidationError extends Error {},
 }));

@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import PayeeAccount from "./PayeeAccount";
-import type { IbanStatus } from "@/lib/validateIban";
+import type { IbanStatus } from "@/lib/utils/validateIban";
 
 function Harness({
   error,

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { PayerAccount } from "@/mocks/payerAccounts";
-import { formatAmount, type AmountLocale } from "./formatAmount";
+import { formatAmount, type AmountLocale } from "../utils/formatAmount";
 
 export const IBAN_FORMAT = /^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/;
 

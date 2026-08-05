@@ -23,13 +23,13 @@ import {
   createPaymentSchema,
   type PaymentFormInput,
   type PaymentFormValues,
-} from "@/lib/paymentSchema";
-import { formatAmount, type AmountLocale } from "@/lib/formatAmount";
+} from "@/lib/schema/paymentSchema";
+import { formatAmount, type AmountLocale } from "@/lib/utils/formatAmount";
 import {
   IbanValidationError,
   validateIban,
   type IbanStatus,
-} from "@/lib/validateIban";
+} from "@/lib/utils/validateIban";
 import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
 
 const defaultValues: PaymentFormInput = {
