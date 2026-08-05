@@ -79,6 +79,17 @@ describe("AccountSelector", () => {
     expect(screen.getByText(/Balance: 1,000.12\s*EUR/)).toBeInTheDocument();
   });
 
+  it("shows only the IBAN in the closed field, not the balance", async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    await openAndSelect(user, "LT307300010172619160");
+
+    const combobox = screen.getByRole("combobox", { name: "Payer Account" });
+    expect(combobox).toHaveTextContent("LT307300010172619160");
+    expect(combobox).not.toHaveTextContent("1,000.12");
+  });
+
   it("prefers the validation error message over the balance helper text", () => {
     render(
       <Harness

@@ -1,5 +1,6 @@
 import type { ControllerRenderProps, FieldError, UseFormTrigger } from "react-hook-form";
 import {
+  Box,
   FormHelperText,
   InputLabel,
   MenuItem,
@@ -47,22 +48,37 @@ const handleChange = (e: SelectChangeEvent<string>) => {
         labelId="payer-account-label"
         label="Payer Account"
         onChange={handleChange}
+        renderValue={(value) =>
+          payerAccounts.find((account) => account.id === value)?.iban ?? ""
+        }
       >
         {payerAccounts.map((account) => (
-          <MenuItem key={account.id} value={account.id}>
+          <MenuItem
+            key={account.id}
+            value={account.id}
+            sx={{ whiteSpace: "normal" }}
+          >
             <Stack
-              direction="row"
+              direction={{ xs: "column", sm: "row" }}
               sx={{
                 justifyContent: "space-between",
+                alignItems: { xs: "stretch", sm: "center" },
                 width: "100%",
-                gap: 2,
+                minWidth: 0,
+                gap: { xs: 0.25, sm: 2 },
               }}
             >
-              <span>{account.iban}</span>
+              <Box component="span" sx={{ overflowWrap: "anywhere" }}>
+                {account.iban}
+              </Box>
               <Typography
                 component="span"
                 color={account.balance < 0 ? "error" : "text.secondary"}
-                sx={{ fontWeight: account.balance < 0 ? 600 : 400 }}
+                sx={{
+                  fontWeight: account.balance < 0 ? 600 : 400,
+                  whiteSpace: "nowrap",
+                  textAlign: { xs: "right", sm: "left" },
+                }}
               >
                 {formatAmount(account.balance, locale)} EUR
               </Typography>
