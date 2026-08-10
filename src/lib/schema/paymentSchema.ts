@@ -1,8 +1,21 @@
 import { z } from "zod";
 import type { PayerAccount } from "@/mocks/payerAccounts";
-import { formatAmount, type AmountLocale } from "../utils/formatAmount";
+import {
+  MAX_FRACTION_DIGITS,
+  formatAmount,
+  type AmountLocale,
+} from "../utils/formatAmount";
 
 export const IBAN_FORMAT = /^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/;
+
+/**
+ * The field itself already refuses a third decimal, so this only backstops
+ * values that never went through it (autofill, a restored draft, tests).
+ */
+const withinCents = (value: number) => {
+  const fraction = value.toString().split(".")[1];
+  return !fraction || fraction.length <= MAX_FRACTION_DIGITS;
+};
 
 const baseFields = {
   payerAccountId: z.string().min(1, "Please select a payer account."),
@@ -23,7 +36,8 @@ const baseFields = {
     .max(135, "Purpose must be at most 135 characters."),
   amount: z.coerce
     .number({ error: "Enter a valid amount." })
-    .min(0.01, "Amount must be at least 0.01."),
+    .min(0.01, "Amount must be at least 0.01.")
+    .refine(withinCents, "Amount can have at most 2 decimal places."),
 };
 
 export function createPaymentSchema(

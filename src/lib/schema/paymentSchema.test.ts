@@ -145,6 +145,28 @@ describe("createPaymentSchema", () => {
       const result = schema().safeParse({ ...validPayload, amount: "abc" });
       expect(result.success).toBe(false);
     });
+
+    it("rejects more than two decimal places", () => {
+      const result = schema().safeParse({ ...validPayload, amount: 10.555 });
+      expect(result.success).toBe(false);
+      expect(issueFor(result, "amount")?.message).toBe(
+        "Amount can have at most 2 decimal places.",
+      );
+    });
+
+    it("accepts one or two decimal places", () => {
+      expect(schema().safeParse({ ...validPayload, amount: 10.5 }).success).toBe(
+        true,
+      );
+      expect(
+        schema().safeParse({ ...validPayload, amount: 10.55 }).success,
+      ).toBe(true);
+    });
+
+    it("rejects a coerced string carrying a third decimal", () => {
+      const result = schema().safeParse({ ...validPayload, amount: "10.555" });
+      expect(result.success).toBe(false);
+    });
   });
 
   describe("balance check", () => {

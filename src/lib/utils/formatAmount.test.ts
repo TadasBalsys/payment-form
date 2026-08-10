@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { formatAmount, parseAmount, toEditableAmount } from "./formatAmount";
+import {
+  countFractionDigits,
+  formatAmount,
+  isAmountInput,
+  parseAmount,
+  toEditableAmount,
+} from "./formatAmount";
 
 describe("formatAmount", () => {
   it("formats using en-US grouping and decimal separators", () => {
@@ -33,12 +39,85 @@ describe("formatAmount", () => {
 
 describe("toEditableAmount", () => {
   it("drops grouping but keeps the locale decimal separator", () => {
-    expect(toEditableAmount(1000.1, "en")).toBe("1000.1");
-    expect(toEditableAmount(1000.1, "lt")).toBe("1000,1");
+    expect(toEditableAmount(1000.1, "en")).toBe("1000.10");
+    expect(toEditableAmount(1000.1, "lt")).toBe("1000,10");
   });
 
-  it("does not pad trailing zeros while editing", () => {
-    expect(toEditableAmount(1000, "en")).toBe("1000");
+  it("keeps the cents padded, so focusing never drops a digit", () => {
+    expect(toEditableAmount(1000, "en")).toBe("1000.00");
+    expect(toEditableAmount(35212231.1, "lt")).toBe("35212231,10");
+  });
+
+  it("differs from the display form only by its grouping separators", () => {
+    const displayed = formatAmount(35212231.1, "lt");
+    expect(displayed).toBe("35 212 231,10");
+    expect(toEditableAmount(35212231.1, "lt")).toBe(
+      displayed.replace(/[\s ]/g, ""),
+    );
+  });
+});
+
+describe("isAmountInput", () => {
+  it("accepts digits, separators and grouped forms", () => {
+    expect(isAmountInput("1000")).toBe(true);
+    expect(isAmountInput("1,000.01")).toBe(true);
+    expect(isAmountInput("1 000,01")).toBe(true);
+    expect(isAmountInput("-5.87")).toBe(true);
+  });
+
+  it("accepts the empty and partial states typing passes through", () => {
+    expect(isAmountInput("")).toBe(true);
+    expect(isAmountInput("-")).toBe(true);
+    expect(isAmountInput("1.")).toBe(true);
+  });
+
+  it("rejects letters and symbols", () => {
+    expect(isAmountInput("abc")).toBe(false);
+    expect(isAmountInput("12abc")).toBe(false);
+    expect(isAmountInput("10 EUR")).toBe(false);
+    expect(isAmountInput("1+2")).toBe(false);
+  });
+
+  it("rejects the exponent notation a number input would accept", () => {
+    expect(isAmountInput("1e5")).toBe(false);
+  });
+
+  it("rejects a minus that is not leading", () => {
+    expect(isAmountInput("1-2")).toBe(false);
+  });
+});
+
+describe("countFractionDigits", () => {
+  it("counts the digits after the decimal separator", () => {
+    expect(countFractionDigits("10.5", "en")).toBe(1);
+    expect(countFractionDigits("10.55", "en")).toBe(2);
+    expect(countFractionDigits("10.555", "en")).toBe(3);
+    expect(countFractionDigits("10,555", "lt")).toBe(3);
+  });
+
+  it("returns zero when there is no decimal separator", () => {
+    expect(countFractionDigits("1000", "en")).toBe(0);
+    expect(countFractionDigits("", "en")).toBe(0);
+  });
+
+  it("does not count grouped digits as decimals", () => {
+    expect(countFractionDigits("1,000", "en")).toBe(0);
+    expect(countFractionDigits("1,000,000", "en")).toBe(0);
+    expect(countFractionDigits("1 000", "lt")).toBe(0);
+  });
+
+  it("counts only what follows the last separator when both appear", () => {
+    expect(countFractionDigits("1,000.10", "en")).toBe(2);
+    expect(countFractionDigits("1.000,105", "lt")).toBe(3);
+  });
+
+  it("agrees with how parseAmount reads the same input", () => {
+    // "1,000" is grouping in en-US but a decimal separator in lt-LT, and the
+    // fraction count has to follow that same reading.
+    expect(parseAmount("1,000", "en")).toBe(1000);
+    expect(countFractionDigits("1,000", "en")).toBe(0);
+    expect(parseAmount("1,000", "lt")).toBe(1);
+    expect(countFractionDigits("1,000", "lt")).toBe(3);
   });
 });
 

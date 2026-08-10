@@ -7,7 +7,10 @@ import type {
 import { InputAdornment, TextField } from "@mui/material";
 import type { PaymentFormInput } from "@/lib/schema/paymentSchema";
 import {
+  MAX_FRACTION_DIGITS,
+  countFractionDigits,
   formatAmount,
+  isAmountInput,
   parseAmount,
   toEditableAmount,
   type AmountLocale,
@@ -42,11 +45,14 @@ const AmountField = ({ field, error, locale, trigger }: AmountFieldProps) => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const next = e.target.value;
-    setDraft(next);
 
+    if (!isAmountInput(next)) return;
+
+    if (countFractionDigits(next, locale) > MAX_FRACTION_DIGITS) return;
+
+    setDraft(next);
     const parsed = parseAmount(next, locale);
-    // Hand unparseable text straight to the schema so it reports the error,
-    // and an empty string so the "required" rule still fires.
+
     field.onChange(parsed ?? (next.trim() === "" ? "" : next));
     void trigger("amount");
   };
